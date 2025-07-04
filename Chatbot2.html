@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Amigo de Trigonometría - Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos básicos para el cuerpo y la fuente */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contenedor principal del chatbot */
+        .chatbot-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px; /* Ancho máximo para simular una ventana de chat */
+            height: 600px; /* Altura fija para el chat */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Encabezado del chatbot */
+        .chatbot-header {
+            background-color: #4CAF50; /* Verde vibrante */
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Área de mensajes (donde se muestra la conversación) */
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto; /* Permite desplazamiento si hay muchos mensajes */
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Espacio entre mensajes */
+        }
+
+        /* Estilos para los mensajes del bot */
+        .message.bot {
+            background-color: #e0f7fa; /* Azul claro */
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 15px;
+            align-self: flex-start; /* Alinea el mensaje a la izquierda */
+            max-width: 80%;
+        }
+
+        /* Estilos para los mensajes del usuario */
+        .message.user {
+            background-color: #dcedc8; /* Verde muy claro */
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 15px;
+            align-self: flex-end; /* Alinea el mensaje a la derecha */
+            max-width: 80%;
+        }
+
+        /* Área de entrada de texto y botones */
+        .chat-input-area {
+            display: flex;
+            flex-direction: column;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            gap: 10px; /* Espacio entre input y botones */
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            box-sizing: border-box; /* Incluye padding y border en el ancho total */
+        }
+
+        .chat-options {
+            display: flex;
+            flex-wrap: wrap; /* Permite que los botones se envuelvan */
+            gap: 8px; /* Espacio entre botones */
+            justify-content: center; /* Centra los botones */
+        }
+
+        .chat-option-button {
+            background-color: #66bb6a; /* Un verde un poco más oscuro */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Evita que el texto del botón se rompa */
+        }
+
+        .chat-option-button:hover {
+            background-color: #43a047; /* Verde más oscuro al pasar el mouse */
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            Tu Amigo de Trigonometría 🤖
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">
+                <p>¡Qué onda, chavo! Soy tu amigo de mates. ¿Andas batallando con las razones trigonométricas? ¡Aquí te echo la mano para que le entiendas chido! 😉</p>
+                <p>Puedes preguntarme sobre **seno, coseno, tangente**, **qué es una hipotenusa**, o **para qué sirven** estas cosas. ¿Qué duda traes ahorita?</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="user-input" placeholder="Escribe tu pregunta o elige una opción...">
+            <div class="chat-options" id="chat-options">
+                <button class="chat-option-button" data-question="¿Para qué sirven?">¿Para qué sirven?</button>
+                <button class="chat-option-button" data-question="¿Qué es SOH CAH TOA?">¿Qué es SOH CAH TOA?</button>
+                <button class="chat-option-button" data-question="Hipotenusa">Hipotenusa</button>
+                <button class="chat-option-button" data-question="Cateto opuesto y adyacente">Cateto opuesto y adyacente</button>
+                <button class="chat-option-button" data-question="Seno">Seno</button>
+                <button class="chat-option-button" data-question="Coseno">Coseno</button>
+                <button class="chat-option-button" data-question="Tangente">Tangente</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const chatOptions = document.getElementById('chat-options');
+
+        // Respuestas del bot (simplificado para el ejemplo)
+        const botResponses = {
+            "¿para qué sirven?": `¡Qué buena pregunta! Son como herramientas matemáticas para calcular catetos y ángulos de triángulos que tienen un ángulo de 90 grados (se llaman triángulos rectángulos). Imagina que quieres saber qué tan alto es un árbol sin subirte, ¡pues con estas razones le sacas la medida!`,
+            "qué es soh cah toa?": `Jaja, ¡no es chino, es el chismógrafo para acordarte de las fórmulas!
+                SOH es Seno = Opuesto / Hipotenusa
+                CAH es Coseno = Adyacente / Hipotenusa
+                TOA es Tangente = Opuesto / Adyacente
+                ¡Con eso no se te olvida!`,
+            "hipotenusa": `La hipotenusa es la línea más larga del triángulo rectángulo y siempre está enfrente del ángulo de 90 grados. ¡Es como la jefa de los catetos!`,
+            "cateto opuesto y adyacente": `¡Fácil!
+                El **cateto opuesto** es el cateto que está enfrente del ángulo que estás usando para tu cálculo.
+                El **cateto adyacente** es el cateto que está pegadito al ángulo que usas, pero que no es la hipotenusa. ¡Piensa en un vecino! ¿Te ubicas mejor ahora?`,
+            "seno": `El seno de un ángulo es la división del cateto opuesto entre la hipotenusa. Imagina que divides la altura del cateto entre la parte más larga. ¡Así de simple!`,
+            "coseno": `El coseno es la división del cateto adyacente entre la hipotenusa. O sea, divides el cateto de al lado entre la parte más larga. ¡No hay pierde!`,
+            "tangente": `La tangente es la división del cateto opuesto entre el cateto adyacente. Aquí no usas la hipotenusa, solo los otros dos catetos. ¡Es como la relación entre la altura y la base del ángulo que te interesa!`,
+            // Respuesta por defecto si no se reconoce la pregunta
+            "default": `Uhm, esa pregunta no la tengo registrada, ¡pero no te agüites! ¿Quieres que te repita las opciones que tengo? También puedes escribir 'Ayuda' para ver lo que te puedo explicar.`,
+            "ayuda": `Puedes preguntarme sobre **seno, coseno, tangente**, **qué es una hipotenusa**, o **para qué sirven** estas cosas. ¡Tú dime!`
+        };
+
+        // Función para añadir un mensaje al chat
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.innerHTML = `<p>${text}</p>`; // Usamos innerHTML para permitir negritas si se añaden
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Desplaza al final
+        }
+
+        // Función para obtener la respuesta del bot
+        function getBotResponse(userMessage) {
+            const cleanedMessage = userMessage.toLowerCase().trim();
+            for (const key in botResponses) {
+                if (cleanedMessage.includes(key.toLowerCase())) {
+                    return botResponses[key];
+                }
+            }
+            return botResponses["default"];
+        }
+
+        // Escucha el evento de presionar Enter en el input de texto
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const message = userInput.value;
+                if (message.trim() !== '') {
+                    addMessage(message, 'user');
+                    userInput.value = ''; // Limpia el input
+                    const botResponse = getBotResponse(message);
+                    setTimeout(() => { // Simula un pequeño "pensamiento" del bot
+                        addMessage(botResponse, 'bot');
+                    }, 500);
+                }
+            }
+        });
+
+        // Escucha los clics en los botones de opciones
+        chatOptions.addEventListener('click', function(e) {
+            if (e.target.classList.contains('chat-option-button')) {
+                const question = e.target.dataset.question;
+                addMessage(question, 'user');
+                const botResponse = getBotResponse(question);
+                setTimeout(() => {
+                    addMessage(botResponse, 'bot');
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
